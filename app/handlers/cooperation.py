@@ -1,5 +1,4 @@
 from telebot import TeleBot
-
 from app.config import ADMIN_ID
 from app.keyboards.main_menu import main_menu
 from app.keyboards.cooperation_menu import (
