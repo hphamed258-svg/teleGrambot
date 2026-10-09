@@ -1,9 +1,10 @@
 from pathlib import Path
 from telebot import TeleBot
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+# from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from app.config import ADMIN_ID
 from app.keyboards.main_menu import main_menu
 from app.keyboards.competitions_menu import (
+    COMPETITION_TITLE,
     competitions_menu,
     competition_details_menu,
     cancel_menu,
@@ -15,8 +16,6 @@ from app.keyboards.competitions_menu import (
 # ==========================================
 # تنظیمات مسابقه سی‌رنگ
 # ==========================================
-
-COMPETITION_TITLE = "🎨 سی‌رنگ"
 
 COMPETITION_TEXT = """
 🎨🖌️ سی‌رنگ؛ جایی که نقاشی کشیدن، دیگه کار آسونی نیست!

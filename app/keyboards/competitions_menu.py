@@ -1,41 +1,40 @@
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
-from app.handlers.competitions import COMPETITION_TITLE
+
+COMPETITION_TITLE = "🎨 سی‌رنگ"
+
 def competitions_menu():
-    keyboard = ReplyKeyboardMarkup(
-        resize_keyboard=True
-    )
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
+
     keyboard.row(KeyboardButton(COMPETITION_TITLE))
-    keyboard.row(
-        KeyboardButton("🔙 بازگشت به منوی اصلی")
-    )
+    keyboard.row(KeyboardButton("🔙 بازگشت به منوی اصلی"))
+
     return keyboard
 
 
 def competition_details_menu():
-    keyboard = ReplyKeyboardMarkup(
-        resize_keyboard=True
-    )
-    keyboard.row(
-        KeyboardButton("📝 ثبت‌نام در مسابقه")
-    )
-    keyboard.row(
-        KeyboardButton("🔙 بازگشت به مسابقات")
-    )
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
+
+    keyboard.row(KeyboardButton("📝 ثبت‌نام در مسابقه"))
+    keyboard.row(KeyboardButton("🔙 بازگشت به مسابقات"))
+
     return keyboard
 
 
 def cancel_menu():
-    keyboard = ReplyKeyboardMarkup(
-        resize_keyboard=True
-    )
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
+
     keyboard.row(KeyboardButton("❌ انصراف"))
+
     return keyboard
 
 
 def phone_menu():
-    keyboard = ReplyKeyboardMarkup(
-        resize_keyboard=True
-    )
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
+
     keyboard.row(
         KeyboardButton(
             "📱 ارسال شماره تلفن",
@@ -43,13 +42,13 @@ def phone_menu():
         )
     )
     keyboard.row(KeyboardButton("❌ انصراف"))
+
     return keyboard
 
 
 def major_menu():
-    keyboard = ReplyKeyboardMarkup(
-        resize_keyboard=True
-    )
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
 
     keyboard.row(
         KeyboardButton("مهندسی کامپیوتر"),
@@ -66,3 +65,4 @@ def major_menu():
     keyboard.row(KeyboardButton("❌ انصراف"))
 
     return keyboard
+
