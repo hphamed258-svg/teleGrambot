@@ -40,7 +40,11 @@ SESSIONS = {
 }
 
 
-ASSETS_PATH = Path(__file__).resolve().parents[1] / "assets"
+POSTER_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "assets"
+    / "first_session.jpg"
+)
 
 DEGREES = [
     "کاردانی",
@@ -114,11 +118,10 @@ def register_sessions_handler(bot: TeleBot):
 
         selected_sessions[user_id] = session_id
         session = SESSIONS[session_id]
-        poster_path = ASSETS_PATH / "first_session.jpg"
 
-        if poster_path.is_file():
+        if POSTER_PATH.is_file():
             try:
-                with open(poster_path, "rb") as poster:
+                with open(POSTER_PATH, "rb") as poster:
                     bot.send_photo(
                         message.chat.id,
                         poster,
