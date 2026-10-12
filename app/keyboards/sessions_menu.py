@@ -36,10 +36,10 @@ def session_phone_menu():
 
 def session_degree_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.row(KeyboardButton("کاردانی"),KeyboardButton("کارشناسی"))
-    # keyboard.row(KeyboardButton("کارشناسی"))
-    keyboard.row(KeyboardButton("کارشناسی ارشد"),KeyboardButton("دکترا"))
-    # keyboard.row(KeyboardButton("دکترا"))
+    keyboard.row(KeyboardButton("کاردانی"))
+    keyboard.row(KeyboardButton("کارشناسی"))
+    keyboard.row(KeyboardButton("کارشناسی ارشد"))
+    keyboard.row(KeyboardButton("دکترا"))
     keyboard.row(KeyboardButton("❌ انصراف"))
     return keyboard
 
