@@ -1,79 +1,3 @@
-
-# from telebot.types import ReplyKeyboardMarkup, KeyboardButton
-
-
-# def sessions_menu(sessions):
-#     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-
-#     for session in sessions:
-#         keyboard.row(KeyboardButton(session["title"]))
-
-#     keyboard.row(KeyboardButton("🔙 بازگشت به منوی اصلی"))
-#     return keyboard
-
-
-# def session_details_menu():
-#     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-#     keyboard.row(KeyboardButton("📝 ثبت‌نام"))
-#     keyboard.row(KeyboardButton("🔙 بازگشت به نشست‌های علمی"))
-#     return keyboard
-
-
-# def session_cancel_menu():
-#     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-#     keyboard.row(KeyboardButton("❌ انصراف"))
-#     return keyboard
-
-
-# def session_phone_menu():
-#     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-#     keyboard.row(
-#         KeyboardButton("📱 ارسال شماره تلفن", request_contact=True)
-#     )
-#     keyboard.row(KeyboardButton("❌ انصراف"))
-#     return keyboard
-
-
-# def session_degree_menu():
-#     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-#     keyboard.row(KeyboardButton("کاردانی"))
-#     keyboard.row(KeyboardButton("کارشناسی"))
-#     keyboard.row(KeyboardButton("کارشناسی ارشد"))
-#     keyboard.row(KeyboardButton("دکترا"))
-#     keyboard.row(KeyboardButton("❌ انصراف"))
-#     return keyboard
-
-
-# def session_entry_year_menu():
-#     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-
-#     keyboard.row(
-#         KeyboardButton("ورودی 401 یا پایین‌تر"),
-#         KeyboardButton("ورودی 402"),
-#     )
-#     keyboard.row(
-#         KeyboardButton("ورودی 403"),
-#         KeyboardButton("ورودی 404"),
-#     )
-#     keyboard.row(KeyboardButton("❌ انصراف"))
-
-#     return keyboard
-
-
-# def session_university_menu():
-#     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-
-#     keyboard.row(KeyboardButton("دانشگاه یزد"))
-#     keyboard.row(KeyboardButton("دانشگاه میبد"))
-#     keyboard.row(KeyboardButton("دانشگاه علم و هنر"))
-#     keyboard.row(KeyboardButton("سایر"))
-#     keyboard.row(KeyboardButton("❌ انصراف"))
-
-#     return keyboard
-
-
-
-
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 
@@ -109,19 +33,41 @@ def session_phone_menu():
     return keyboard
 
 
-def session_major_menu():
+def session_degree_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    keyboard.row(KeyboardButton("کاردانی"))
+    keyboard.row(KeyboardButton("کارشناسی"))
+    keyboard.row(KeyboardButton("کارشناسی ارشد"))
+    keyboard.row(KeyboardButton("دکترا"))
+    keyboard.row(KeyboardButton("❌ انصراف"))
+
+    return keyboard
+
+
+def session_entry_year_menu():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
     keyboard.row(
-        KeyboardButton("مهندسی کامپیوتر"),
-        KeyboardButton("حسابداری"),
+        KeyboardButton("ورودی 401 یا پایین‌تر"),
+        KeyboardButton("ورودی 402"),
     )
     keyboard.row(
-        KeyboardButton("روانشناسی"),
-        KeyboardButton("حقوق"),
-    )
-    keyboard.row(
-        KeyboardButton("مدیریت بازرگانی"),
-        KeyboardButton("زبان و ادبیات انگلیسی"),
+        KeyboardButton("ورودی 403"),
+        KeyboardButton("ورودی 404"),
     )
     keyboard.row(KeyboardButton("❌ انصراف"))
+
+    return keyboard
+
+
+def session_university_menu():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    keyboard.row(KeyboardButton("دانشگاه یزد"))
+    keyboard.row(KeyboardButton("دانشگاه میبد"))
+    keyboard.row(KeyboardButton("دانشگاه علم و هنر"))
+    keyboard.row(KeyboardButton("سایر"))
+    keyboard.row(KeyboardButton("❌ انصراف"))
+
     return keyboard
