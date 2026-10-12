@@ -34,19 +34,19 @@ def session_phone_menu():
     return keyboard
 
 
-def session_major_menu():
+def session_degree_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.row(
-        KeyboardButton("مهندسی کامپیوتر"),
-        KeyboardButton("حسابداری"),
-    )
-    keyboard.row(
-        KeyboardButton("روانشناسی"),
-        KeyboardButton("حقوق"),
-    )
-    keyboard.row(
-        KeyboardButton("مدیریت بازرگانی"),
-        KeyboardButton("زبان و ادبیات انگلیسی"),
-    )
+    keyboard.row(KeyboardButton("کارشناسی"))
+    keyboard.row(KeyboardButton("کارشناسی ارشد"))
+    keyboard.row(KeyboardButton("دکترا"))
+    keyboard.row(KeyboardButton("❌ انصراف"))
+    return keyboard
+
+
+def session_entry_year_menu():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.row(KeyboardButton("۴۰۲ ورودی"), KeyboardButton("۴۰۳ ورودی"))
+    keyboard.row(KeyboardButton("۴۰۴ ورودی"))
+    keyboard.row(KeyboardButton("ورودی ۴۰۱ یا پایین‌تر"))
     keyboard.row(KeyboardButton("❌ انصراف"))
     return keyboard

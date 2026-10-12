@@ -10,18 +10,17 @@ from app.keyboards.sessions_menu import (
     session_details_menu,
     session_cancel_menu,
     session_phone_menu,
-    session_major_menu,
+    session_degree_menu,
+    session_entry_year_menu,
 )
 
 
-# اطلاعات نشست‌ها
-# برای اضافه‌کردن نشست جدید، یک مورد مشابه به این دیکشنری اضافه کن.
 SESSIONS = {
     "first_session": {
-        "title": "💻 سیری در جهان کامپیوتر | فصل دوم، جلسه اول",
+        "title": "💻 سیری در جهان کامپیوتر | فصل دوم، قسمت اول",
         "text": (
             "💻 سیری در جهان کامپیوتر\n\n"
-            "فصل دوم، جلسه اول"
+            "فصل دوم، قسمت اول"
         ),
         "poster": "first_session.jpg",
     },
@@ -29,16 +28,19 @@ SESSIONS = {
 
 ASSETS_PATH = Path(__file__).resolve().parents[1] / "assets"
 
-MAJORS = [
-    "مهندسی کامپیوتر",
-    "حسابداری",
-    "روانشناسی",
-    "حقوق",
-    "مدیریت بازرگانی",
-    "زبان و ادبیات انگلیسی",
+DEGREES = [
+    "کارشناسی",
+    "کارشناسی ارشد",
+    "دکترا",
 ]
 
-# اطلاعات موقت کاربران
+ENTRY_YEARS = [
+    "۴۰۲ ورودی",
+    "۴۰۳ ورودی",
+    "۴۰۴ ورودی",
+    "ورودی ۴۰۱ یا پایین‌تر",
+]
+
 selected_sessions = {}
 registration_data = {}
 
@@ -52,7 +54,7 @@ def register_sessions_handler(bot: TeleBot):
     def show_sessions(message):
         bot.send_message(
             message.chat.id,
-            "🎙️ نشست‌های علمی",
+            "🎙️ لطفاً نشست موردنظر خود را انتخاب کنید:",
             reply_markup=sessions_menu(list(SESSIONS.values())),
         )
 
@@ -61,8 +63,9 @@ def register_sessions_handler(bot: TeleBot):
         func=lambda message: message.text == "🔙 بازگشت به منوی اصلی"
     )
     def back_to_main(message):
-        selected_sessions.pop(message.from_user.id, None)
-        registration_data.pop(message.from_user.id, None)
+        user_id = message.from_user.id
+        selected_sessions.pop(user_id, None)
+        registration_data.pop(user_id, None)
 
         bot.send_message(
             message.chat.id,
@@ -70,7 +73,7 @@ def register_sessions_handler(bot: TeleBot):
             reply_markup=main_menu(),
         )
 
-    # نمایش اطلاعات نشست انتخاب‌شده
+    # نمایش جزئیات نشست
     @bot.message_handler(
         func=lambda message: message.text in [
             session["title"] for session in SESSIONS.values()
@@ -110,13 +113,12 @@ def register_sessions_handler(bot: TeleBot):
     )
     def back_to_sessions(message):
         user_id = message.from_user.id
-
         selected_sessions.pop(user_id, None)
         registration_data.pop(user_id, None)
 
         bot.send_message(
             message.chat.id,
-            "🎙️ نشست‌های علمی",
+            "🎙️ لطفاً نشست موردنظر خود را انتخاب کنید:",
             reply_markup=sessions_menu(list(SESSIONS.values())),
         )
 
@@ -146,13 +148,9 @@ def register_sessions_handler(bot: TeleBot):
             reply_markup=session_cancel_menu(),
         )
 
-        bot.register_next_step_handler(
-            message,
-            get_name,
-            session_id,
-        )
+        bot.register_next_step_handler(message, get_name, session_id)
 
-    # دریافت نام و نام خانوادگی
+    # دریافت نام
     def get_name(message, session_id):
         user_id = message.from_user.id
 
@@ -165,11 +163,7 @@ def register_sessions_handler(bot: TeleBot):
                 "لطفاً نام و نام خانوادگی خود را وارد کنید.",
                 reply_markup=session_cancel_menu(),
             )
-            bot.register_next_step_handler(
-                message,
-                get_name,
-                session_id,
-            )
+            bot.register_next_step_handler(message, get_name, session_id)
             return
 
         registration_data[user_id]["name"] = message.text.strip()
@@ -180,13 +174,9 @@ def register_sessions_handler(bot: TeleBot):
             reply_markup=session_phone_menu(),
         )
 
-        bot.register_next_step_handler(
-            message,
-            get_phone,
-            session_id,
-        )
+        bot.register_next_step_handler(message, get_phone, session_id)
 
-    # دریافت شماره تلفن با دکمه اشتراک‌گذاری مخاطب
+    # دریافت شماره تلفن
     def get_phone(message, session_id):
         user_id = message.from_user.id
 
@@ -199,11 +189,7 @@ def register_sessions_handler(bot: TeleBot):
                 "لطفاً از دکمه «📱 ارسال شماره تلفن» استفاده کنید.",
                 reply_markup=session_phone_menu(),
             )
-            bot.register_next_step_handler(
-                message,
-                get_phone,
-                session_id,
-            )
+            bot.register_next_step_handler(message, get_phone, session_id)
             return
 
         if (
@@ -215,11 +201,7 @@ def register_sessions_handler(bot: TeleBot):
                 "لطفاً شماره تلفن خودتان را ارسال کنید.",
                 reply_markup=session_phone_menu(),
             )
-            bot.register_next_step_handler(
-                message,
-                get_phone,
-                session_id,
-            )
+            bot.register_next_step_handler(message, get_phone, session_id)
             return
 
         registration_data[user_id]["phone"] = (
@@ -228,61 +210,84 @@ def register_sessions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "رشته تحصیلی خود را انتخاب کنید:",
-            reply_markup=session_major_menu(),
+            "لطفاً مقطع تحصیلی خود را انتخاب کنید:",
+            reply_markup=session_degree_menu(),
         )
 
-        bot.register_next_step_handler(
-            message,
-            get_major,
-            session_id,
-        )
+        bot.register_next_step_handler(message, get_degree, session_id)
 
-    # دریافت رشته تحصیلی
-    def get_major(message, session_id):
+    # دریافت مقطع تحصیلی
+    def get_degree(message, session_id):
         user_id = message.from_user.id
 
         if is_cancel(message):
             return
 
-        if message.text not in MAJORS:
+        if message.text not in DEGREES:
             bot.send_message(
                 message.chat.id,
-                "لطفاً رشته تحصیلی خود را از گزینه‌ها انتخاب کنید.",
-                reply_markup=session_major_menu(),
+                "لطفاً مقطع تحصیلی خود را از گزینه‌ها انتخاب کنید.",
+                reply_markup=session_degree_menu(),
+            )
+            bot.register_next_step_handler(message, get_degree, session_id)
+            return
+
+        registration_data[user_id]["degree"] = message.text
+
+        bot.send_message(
+            message.chat.id,
+            "لطفاً سال ورودی خود را انتخاب کنید:",
+            reply_markup=session_entry_year_menu(),
+        )
+
+        bot.register_next_step_handler(
+            message,
+            get_entry_year,
+            session_id,
+        )
+
+    # دریافت سال ورودی
+    def get_entry_year(message, session_id):
+        user_id = message.from_user.id
+
+        if is_cancel(message):
+            return
+
+        if message.text not in ENTRY_YEARS:
+            bot.send_message(
+                message.chat.id,
+                "لطفاً سال ورودی خود را از گزینه‌ها انتخاب کنید.",
+                reply_markup=session_entry_year_menu(),
             )
             bot.register_next_step_handler(
                 message,
-                get_major,
+                get_entry_year,
                 session_id,
             )
             return
 
-        registration_data[user_id]["major"] = message.text
+        registration_data[user_id]["entry_year"] = message.text
 
         send_registration_to_admin(message, session_id)
 
-    # ارسال اطلاعات ثبت‌نام به ادمین
+    # ارسال اطلاعات برای ادمین
     def send_registration_to_admin(message, session_id):
         user_id = message.from_user.id
         user = message.from_user
         data = registration_data[user_id]
         session = SESSIONS[session_id]
 
-        username = (
-            f"@{user.username}"
-            if user.username
-            else "ندارد"
-        )
+        username = f"@{user.username}" if user.username else "ندارد"
 
         admin_message = (
             "🎙️ ثبت‌نام جدید در نشست علمی\n\n"
-            f"📌 نشست: {session['title']}\n"
+            f"📌 عنوان نشست: {session['title']}\n"
             f"👤 نام و نام خانوادگی: {data['name']}\n"
             f"🔗 نام کاربری: {username}\n"
             f"🆔 شناسه تلگرام: {user.id}\n"
             f"📱 شماره تلفن: {data['phone']}\n"
-            f"🎓 رشته تحصیلی: {data['major']}"
+            f"🎓 مقطع تحصیلی: {data['degree']}\n"
+            f"📚 سال ورودی: {data['entry_year']}"
         )
 
         try:
