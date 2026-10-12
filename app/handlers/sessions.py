@@ -12,17 +12,19 @@ from app.keyboards.sessions_menu import (
     session_phone_menu,
     session_degree_menu,
     session_entry_year_menu,
+    session_university_menu,
 )
 
 
 SESSIONS = {
     "first_session": {
-        "title": "💻 سیری در جهان کامپیوتر | فصل دوم، جلسه اول",
-        "text": """🚀 چقدر با مسیر واقعی ورود به دنیای هوش مصنوعی آشنایی داری؟ تا حالا دوست داشتی از تجربه‌های یک متخصص بشنوی و سؤال‌هایی رو بپرسی که شاید جوابشون رو توی کلاس‌های درس پیدا نکنی؟
+        "title": """ثبت‌نام نشست علمی
+        💻 سیری در جهان کامپیوتر | فصل دوم، قسمت اول""",
+        "text": """🟢 چقدر با مسیر واقعی ورود به دنیای هوش مصنوعی آشنایی داری؟ تا حالا دوست داشتی از تجربه‌های یک متخصص بشنوی و سؤال‌هایی رو بپرسی که شاید جوابشون رو توی کلاس‌های درس پیدا نکنی؟
 
-در اولین جلسه از فصل دوم مجموعه‌نشست‌های «سیری در جهان کامپیوتر»، میزبان آقای پوریا اعظمی، متخصص حوزه هوش مصنوعی و پردازش تصویر هستیم تا در فضایی صمیمی و تعاملی، درباره تجربه‌ها، مسیر تخصصی و دنیای این فناوری‌ها گفت‌وگو کنیم. 🤖
+🔵 در اولین جلسه از فصل دوم مجموعه‌نشست‌های «سیری در جهان کامپیوتر»، میزبان آقای پوریا اعظمی، متخصص حوزه هوش مصنوعی و پردازش تصویر هستیم تا در فضایی صمیمی و تعاملی، درباره تجربه‌ها، مسیر تخصصی و دنیای این فناوری‌ها گفت‌وگو کنیم.
 
-🎙️ این نشست قراره یک گفت‌وگوی دوطرفه باشه؛ نه صرفاً یک سخنرانی! شما هم در شکل‌گیری بحث نقش دارید و می‌تونید سؤال‌هاتون رو مطرح کنید، از تجربه‌های مهمان نشست بشنوید و از دل پرسش‌وپاسخ‌ها، دید تازه‌ای نسبت به مسیر یادگیری و فعالیت در این حوزه به دست بیارید.
+🟢 این نشست قراره یک گفت‌وگوی دوطرفه باشه؛ نه صرفاً یک سخنرانی! شما هم در شکل‌گیری بحث نقش دارید و می‌تونید سؤال‌هاتون رو مطرح کنید، از تجربه‌های مهمان نشست بشنوید و از دل پرسش‌وپاسخ‌ها، دید تازه‌ای نسبت به مسیر یادگیری و فعالیت در این حوزه به دست بیارید.
 
 📅 تاریخ برگزاری: پنجشنبه، ۲۳ مهر
 ⏰ ساعت: ۱۰ تا ۱۱:۳۰
@@ -31,7 +33,10 @@ SESSIONS = {
 
 📝 برای تکمیل ثبت‌نام، مراحل بعدی ربات رو دنبال کن و اطلاعات درخواستی رو وارد کن.
 
-✨ سیری در جهان کامپیوتر؛ جایی برای شنیدن تجربه‌ها، پرسیدن سؤال‌ها و پیدا کردن مسیرهای تازه""",
+سیری در جهان کامپیوتر؛ جایی برای شنیدن تجربه‌ها، پرسیدن سؤال‌ها و پیدا کردن مسیرهای تازه🌱
+
+پردیس مهریز دانشگاه یزد با همکاری انجمن های علمی مهندسی کامپیوتر دانشگاه‌های علم‌و‌هنر و میبد
+""",
         "poster": "first_session.jpg",
     },
 }
@@ -39,12 +44,10 @@ SESSIONS = {
 ASSETS_PATH = Path(__file__).resolve().parents[1] / "assets"
 
 DEGREES = [
-    "کاردانی",
     "کارشناسی",
     "کارشناسی ارشد",
     "دکترا",
 ]
-
 
 ENTRY_YEARS = [
     "ورودی 401 یا پایین‌تر",
@@ -53,6 +56,12 @@ ENTRY_YEARS = [
     "ورودی 404",
 ]
 
+UNIVERSITIES = [
+    "دانشگاه یزد",
+    "دانشگاه میبد",
+    "دانشگاه علم و هنر",
+    "سایر",
+]
 
 selected_sessions = {}
 registration_data = {}
@@ -60,7 +69,7 @@ registration_data = {}
 
 def register_sessions_handler(bot: TeleBot):
 
-    # نمایش فهرست نشست‌ها
+    # نمایش نشست‌های علمی
     @bot.message_handler(
         func=lambda message: message.text == "🎙️ نشست‌های علمی"
     )
@@ -163,7 +172,7 @@ def register_sessions_handler(bot: TeleBot):
 
         bot.register_next_step_handler(message, get_name, session_id)
 
-    # دریافت نام
+    # دریافت نام و نام خانوادگی
     def get_name(message, session_id):
         user_id = message.from_user.id
 
@@ -281,9 +290,78 @@ def register_sessions_handler(bot: TeleBot):
 
         registration_data[user_id]["entry_year"] = message.text
 
+        bot.send_message(
+            message.chat.id,
+            "دانشگاه خود را انتخاب کنید:",
+            reply_markup=session_university_menu(),
+        )
+
+        bot.register_next_step_handler(
+            message,
+            get_university,
+            session_id,
+        )
+
+    # دریافت دانشگاه
+    def get_university(message, session_id):
+        user_id = message.from_user.id
+
+        if is_cancel(message):
+            return
+
+        if message.text not in UNIVERSITIES:
+            bot.send_message(
+                message.chat.id,
+                "لطفاً دانشگاه خود را از گزینه‌ها انتخاب کنید.",
+                reply_markup=session_university_menu(),
+            )
+            bot.register_next_step_handler(
+                message,
+                get_university,
+                session_id,
+            )
+            return
+
+        if message.text == "سایر":
+            bot.send_message(
+                message.chat.id,
+                "لطفاً نام دانشگاه خود را وارد کنید:",
+                reply_markup=session_cancel_menu(),
+            )
+            bot.register_next_step_handler(
+                message,
+                get_other_university,
+                session_id,
+            )
+            return
+
+        registration_data[user_id]["university"] = message.text
         send_registration_to_admin(message, session_id)
 
-    # ارسال اطلاعات برای ادمین
+    # دریافت نام دانشگاه در صورت انتخاب «سایر»
+    def get_other_university(message, session_id):
+        user_id = message.from_user.id
+
+        if is_cancel(message):
+            return
+
+        if not message.text or not message.text.strip():
+            bot.send_message(
+                message.chat.id,
+                "لطفاً نام دانشگاه خود را وارد کنید.",
+                reply_markup=session_cancel_menu(),
+            )
+            bot.register_next_step_handler(
+                message,
+                get_other_university,
+                session_id,
+            )
+            return
+
+        registration_data[user_id]["university"] = message.text.strip()
+        send_registration_to_admin(message, session_id)
+
+    # ارسال اطلاعات ثبت‌نام برای ادمین
     def send_registration_to_admin(message, session_id):
         user_id = message.from_user.id
         user = message.from_user
@@ -300,7 +378,8 @@ def register_sessions_handler(bot: TeleBot):
             f"🆔 شناسه تلگرام: {user.id}\n"
             f"📱 شماره تلفن: {data['phone']}\n"
             f"🎓 مقطع تحصیلی: {data['degree']}\n"
-            f"📚 سال ورودی: {data['entry_year']}"
+            f"📚 سال ورودی: {data['entry_year']}\n"
+            f"🏛 دانشگاه: {data['university']}"
         )
 
         try:

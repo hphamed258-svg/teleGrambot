@@ -44,7 +44,6 @@ def session_degree_menu():
     return keyboard
 
 
-
 def session_entry_year_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 
@@ -60,3 +59,14 @@ def session_entry_year_menu():
 
     return keyboard
 
+
+def session_university_menu():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    keyboard.row(KeyboardButton("دانشگاه یزد"))
+    keyboard.row(KeyboardButton("دانشگاه میبد"))
+    keyboard.row(KeyboardButton("دانشگاه علم و هنر"))
+    keyboard.row(KeyboardButton("سایر"))
+    keyboard.row(KeyboardButton("❌ انصراف"))
+
+    return keyboard
