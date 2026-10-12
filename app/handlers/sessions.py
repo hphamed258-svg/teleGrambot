@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 from telebot import TeleBot
@@ -43,6 +42,7 @@ SESSIONS = {
 ASSETS_PATH = Path(__file__).resolve().parents[1] / "assets"
 
 DEGREES = [
+    "کاردانی",
     "کارشناسی",
     "کارشناسی ارشد",
     "دکترا",
