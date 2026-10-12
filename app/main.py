@@ -8,6 +8,7 @@ from app.handlers.courses import register_courses_handler
 from app.handlers.competitions import register_competitions_handler
 from app.handlers.feedback import register_feedback_handler
 from app.handlers.cooperation import register_cooperation_handler
+from app.handlers.sessions import register_sessions_handler
 
 
 bot = telebot.TeleBot(API_TOKEN)
@@ -19,7 +20,7 @@ register_courses_handler(bot)
 register_competitions_handler(bot)
 register_feedback_handler(bot)
 register_cooperation_handler(bot)
-
+register_sessions_handler(bot)
 
 print("Bot is running...")
 
