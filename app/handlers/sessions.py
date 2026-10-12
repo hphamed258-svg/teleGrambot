@@ -114,7 +114,7 @@ def register_sessions_handler(bot: TeleBot):
 
         selected_sessions[user_id] = session_id
         session = SESSIONS[session_id]
-        poster_path = ASSETS_PATH / session["poster"]
+        poster_path = ASSETS_PATH / "first_session.jpg"
 
         if poster_path.is_file():
             try:
@@ -495,3 +495,6 @@ def register_sessions_handler(bot: TeleBot):
             return True
 
         return False
+
+
+
