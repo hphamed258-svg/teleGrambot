@@ -29,16 +29,9 @@ SESSIONS = {
 📍 مکان: دانشگاه یزد، دانشکده منابع طبیعی، سالن منتظر قائم
 💰 هزینه شرکت: رایگان
 
-📝 برای تکمیل ثبت‌نام، مراحل بعدی ربات رو دنبال کن و اطلاعات درخواستی رو وارد کن.
-
-سیری در جهان کامپیوتر؛ جایی برای شنیدن تجربه‌ها، پرسیدن سؤال‌ها و پیدا کردن مسیرهای تازه🌱
-
-پردیس مهریز دانشگاه یزد با همکاری انجمن های علمی مهندسی کامپیوتر دانشگاه‌های علم‌و‌هنر و میبد
-""",
-        "poster": "first_session.jpg",
+📝 برای تکمیل ثبت‌نام، مراحل بعدی ربات رو دنبال کن و اطلاعات درخواستی رو وارد کن.""",
     },
 }
-
 
 POSTER_PATH = (
     Path(__file__).resolve().parents[1]
@@ -118,6 +111,22 @@ def register_sessions_handler(bot: TeleBot):
 
         selected_sessions[user_id] = session_id
         session = SESSIONS[session_id]
+        # if POSTER_PATH.is_file():
+        #     print(f"فایل پیدا شد: {POSTER_PATH}")
+        #     try:
+        #         with open(POSTER_PATH, "rb") as poster:
+        #             bot.send_photo(
+        #                 message.chat.id,
+        #                 poster,
+        #                 caption=session["text"],
+        #                 reply_markup=session_details_menu(),
+        #             )
+        #         return
+        #     except Exception as e:
+        #         print(f"خطا در ارسال عکس: {type(e).__name__}: {e}")
+        #         # اینجا می‌تونی به ادمین هم خبر بدی
+        # else:
+        #     print(f"فایل پیدا نشد: {POSTER_PATH}")
 
         if POSTER_PATH.is_file():
             try:
