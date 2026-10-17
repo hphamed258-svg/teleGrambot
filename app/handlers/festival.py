@@ -18,7 +18,7 @@ from app.keyboards.festival_menu import (
 
 logger = logging.getLogger(__name__)
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FESTIVAL_POSTER = PROJECT_ROOT / "assets" / "rang_o_shoor.jpg"
 
 FESTIVAL_DESCRIPTION = """🎊 ثبت‌نام جشنواره رنگ و شور
