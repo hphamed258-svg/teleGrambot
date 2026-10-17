@@ -180,6 +180,7 @@ def register_festival_handler(bot):
 
         data = state["data"]
         step = state["step"]
+        data["username"] = message.from_user.username or "ندارد"
 
         if step == "full_name":
             if message.content_type != "text" or not text:
@@ -340,6 +341,7 @@ def send_registration_to_admin(bot, chat_id, state):
 
         admin_message = (
             "رنگ و شور ✅\n\n"
+            f"\n👤 آیدی تلگرام: @{data['username']}"
             f"👤 نام و نام خانوادگی: {data['full_name']}\n"
             f"🆔 شماره دانشجویی: {data['student_id']}\n"
             f"📞 شماره تماس: {data['phone']}\n"
