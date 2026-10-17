@@ -1,30 +1,40 @@
+
+import logging
 import os
 from pathlib import Path
+
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+
 from app.keyboards.main_menu import main_menu
 from app.keyboards.festival_menu import (
     festival_menu,
     festival_detail_menu,
     degree_menu,
+    cancel_keyboard,
+    phone_keyboard,
+    retry_keyboard,
 )
 
 
-# مسیر پوستر جشنواره
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-FESTIVAL_POSTER = PROJECT_ROOT / "assets" / "rang_o_shoor.jpg"
+logger = logging.getLogger(__name__)
 
-# متن موقت جشنواره؛ بعداً با اطلاعات نهایی جایگزین کن
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+FESTIVAL_POSTER = PROJECT_ROOT / "Assets" / "rang_o_shoor.jpg"
+
 FESTIVAL_DESCRIPTION = (
     "🎨 جشنواره رنگ و شور\n\n"
-    "به جشنواره رنگ و شور خوش اومدی! 🎉\n"
-    "برای شرکت در جشنواره، از دکمه زیر استفاده کن."
+    "به جشنواره رنگ و شور خوش آمدید! 🎉\n"
+    "برای شرکت در جشنواره، دکمه ثبت‌نام را انتخاب کنید."
 )
 
-# شناسه عددی ادمین یا گروه دریافت‌کننده ثبت‌نام‌ها
-# مقدار ADMIN_CHAT_ID را در فایل .env تنظیم کن.
-ADMIN_CHAT_ID = os.getenv("ADMIN_CHAT_ID")
+ALLOWED_DEGREES = {
+    "کاردانی",
+    "کارشناسی",
+    "کارشناسی ارشد",
+    "دکترا",
+}
 
-# وضعیت موقت هر کاربر؛ اطلاعات در دیتابیس ذخیره نمی‌شود.
+# نگهداری موقت اطلاعات ثبت‌نام در حافظه
 registration_states = {}
 
 
@@ -38,7 +48,7 @@ def register_festival_handler(bot):
 
         bot.send_message(
             message.chat.id,
-            "🎉 بخش جشن‌ها\n\nجشنواره موردنظرت رو انتخاب کن:",
+            "لطفاً جشن موردنظر خود را انتخاب کنید:",
             reply_markup=festival_menu()
         )
 
@@ -60,7 +70,7 @@ def register_festival_handler(bot):
             bot.send_message(
                 message.chat.id,
                 FESTIVAL_DESCRIPTION
-                + "\n\n⚠️ پوستر هنوز در پوشه assets قرار نگرفته.",
+                + "\n\nپوستر جشنواره هنوز بارگذاری نشده است.",
                 reply_markup=festival_detail_menu()
             )
 
@@ -75,7 +85,7 @@ def register_festival_handler(bot):
 
         bot.send_message(
             message.chat.id,
-            "لطفاً نام و نام خانوادگی خودت رو وارد کن:",
+            "لطفاً نام و نام خانوادگی خود را وارد کنید:",
             reply_markup=cancel_keyboard()
         )
 
@@ -87,16 +97,32 @@ def register_festival_handler(bot):
 
         bot.send_message(
             message.chat.id,
-            "ثبت‌نام لغو شد.",
+            "ثبت‌نام شما لغو شد.",
             reply_markup=festival_detail_menu()
         )
 
     @bot.message_handler(
-        func=lambda message: message.text in (
-            "🔙 بازگشت به جشن‌ها",
-            "🏠 منوی اصلی",
-            "🔙 بازگشت به منوی اصلی",
+        func=lambda message: (
+            message.text == "🔄 تلاش مجدد برای ثبت‌نام"
+            and message.chat.id in registration_states
         )
+    )
+    def retry_registration(message):
+        state = registration_states.get(message.chat.id)
+
+        if state and state.get("step") == "retry":
+            send_registration_to_admin(
+                bot,
+                message.chat.id,
+                state
+            )
+
+    @bot.message_handler(
+        func=lambda message: message.text in {
+            "🔙 بازگشت به جشن‌ها",
+            "🔙 بازگشت به منوی اصلی",
+            "🏠 منوی اصلی",
+        }
     )
     def navigate_back(message):
         registration_states.pop(message.chat.id, None)
@@ -104,19 +130,19 @@ def register_festival_handler(bot):
         if message.text == "🔙 بازگشت به جشن‌ها":
             bot.send_message(
                 message.chat.id,
-                "🎉 یکی از گزینه‌های زیر رو انتخاب کن:",
+                "لطفاً یکی از گزینه‌های زیر را انتخاب کنید:",
                 reply_markup=festival_menu()
             )
         else:
             bot.send_message(
                 message.chat.id,
-                "به منوی اصلی برگشتیم.",
+                "لطفاً یکی از گزینه‌های زیر را انتخاب کنید:",
                 reply_markup=main_menu()
             )
 
     @bot.message_handler(
         func=lambda message: message.chat.id in registration_states,
-        content_types=["text"]
+        content_types=["text", "contact"]
     )
     def handle_registration(message):
         chat_id = message.chat.id
@@ -127,59 +153,108 @@ def register_festival_handler(bot):
 
         text = (message.text or "").strip()
 
-        if text in ("❌ لغو ثبت‌نام", "🔙 بازگشت به جشن‌ها",
-                    "🏠 منوی اصلی", "🔙 بازگشت به منوی اصلی"):
+        # دکمه‌های ناوبری توسط هندلرهای اختصاصی مدیریت می‌شوند.
+        if text in {
+            "❌ لغو ثبت‌نام",
+            "🔙 بازگشت به جشن‌ها",
+            "🔙 بازگشت به منوی اصلی",
+            "🏠 منوی اصلی",
+            "🔄 تلاش مجدد برای ثبت‌نام",
+        }:
             return
 
-        if not text:
-            bot.send_message(chat_id, "لطفاً پاسخ رو وارد کن.")
-            return
-
-        step = state["step"]
         data = state["data"]
+        step = state["step"]
 
         if step == "full_name":
+            if message.content_type != "text" or not text:
+                bot.send_message(
+                    chat_id,
+                    "لطفاً نام و نام خانوادگی خود را به‌صورت متنی وارد کنید:",
+                    reply_markup=cancel_keyboard()
+                )
+                return
+
             data["full_name"] = text
             state["step"] = "student_id"
 
             bot.send_message(
                 chat_id,
-                "شماره دانشجویی‌ات رو وارد کن:",
+                "لطفاً شماره دانشجویی خود را وارد کنید:",
                 reply_markup=cancel_keyboard()
             )
 
         elif step == "student_id":
+            if message.content_type != "text" or not text:
+                bot.send_message(
+                    chat_id,
+                    "لطفاً شماره دانشجویی خود را به‌صورت متنی وارد کنید:",
+                    reply_markup=cancel_keyboard()
+                )
+                return
+
             data["student_id"] = text
             state["step"] = "phone"
 
             bot.send_message(
                 chat_id,
-                "شماره تماس خودت رو وارد کن:",
-                reply_markup=cancel_keyboard()
+                "لطفاً شماره تماس خود را با دکمه زیر ارسال کنید. "
+                "در صورت نیاز می‌توانید شماره را دستی نیز وارد کنید:",
+                reply_markup=phone_keyboard()
             )
 
         elif step == "phone":
-            data["phone"] = text
+            if message.content_type == "contact":
+                contact = message.contact
+
+                if (
+                    contact.user_id is not None
+                    and contact.user_id != message.from_user.id
+                ):
+                    bot.send_message(
+                        chat_id,
+                        "لطفاً شماره تماس متعلق به خود را ارسال کنید:",
+                        reply_markup=phone_keyboard()
+                    )
+                    return
+
+                phone = contact.phone_number
+
+            elif message.content_type == "text":
+                phone = text.replace(" ", "").replace("-", "")
+
+                if not phone.lstrip("+").isdigit():
+                    bot.send_message(
+                        chat_id,
+                        "لطفاً شماره تماس معتبر وارد کنید یا از دکمه ارسال شماره تماس استفاده کنید:",
+                        reply_markup=phone_keyboard()
+                    )
+                    return
+            else:
+                bot.send_message(
+                    chat_id,
+                    "لطفاً شماره تماس خود را ارسال کنید:",
+                    reply_markup=phone_keyboard()
+                )
+                return
+
+            data["phone"] = phone
             state["step"] = "degree"
 
             bot.send_message(
                 chat_id,
-                "مقطع تحصیلی‌ات رو انتخاب کن:",
+                "لطفاً مقطع تحصیلی خود را انتخاب کنید:",
                 reply_markup=degree_menu()
             )
 
         elif step == "degree":
-            allowed_degrees = {
-                "کاردانی",
-                "کارشناسی",
-                "کارشناسی ارشد",
-                "دکترا",
-            }
-
-            if text not in allowed_degrees:
+            if (
+                message.content_type != "text"
+                or text not in ALLOWED_DEGREES
+            ):
                 bot.send_message(
                     chat_id,
-                    "لطفاً مقطع تحصیلی رو از گزینه‌های زیر انتخاب کن:",
+                    "لطفاً مقطع تحصیلی خود را از گزینه‌های زیر انتخاب کنید:",
                     reply_markup=degree_menu()
                 )
                 return
@@ -189,56 +264,97 @@ def register_festival_handler(bot):
 
             bot.send_message(
                 chat_id,
-                "رشته تحصیلی‌ات رو در یک پیام متنی وارد کن:",
+                "لطفاً رشته تحصیلی خود را در قالب یک پیام متنی ارسال کنید:",
                 reply_markup=cancel_keyboard()
             )
 
         elif step == "major":
+            if message.content_type != "text" or not text:
+                bot.send_message(
+                    chat_id,
+                    "لطفاً رشته تحصیلی خود را در قالب یک پیام متنی ارسال کنید:",
+                    reply_markup=cancel_keyboard()
+                )
+                return
+
             data["major"] = text
 
-            if not ADMIN_CHAT_ID:
-                bot.send_message(
-                    chat_id,
-                    "متأسفانه ثبت‌نام فعلاً تکمیل نشد. لطفاً بعداً تلاش کن.",
-                    reply_markup=festival_detail_menu()
-                )
-                registration_states.pop(chat_id, None)
-                return
-
-            admin_message = (
-                "رنگ و شور ✅\n\n"
-                f"👤 نام و نام خانوادگی: {data['full_name']}\n"
-                f"🆔 شماره دانشجویی: {data['student_id']}\n"
-                f"📞 شماره تماس: {data['phone']}\n"
-                f"🎓 مقطع تحصیلی: {data['degree']}\n"
-                f"📚 رشته تحصیلی: {data['major']}"
+            required_fields = (
+                "full_name",
+                "student_id",
+                "phone",
+                "degree",
+                "major",
             )
 
-            try:
-                bot.send_message(
-                    int(ADMIN_CHAT_ID),
-                    admin_message
-                )
-            except Exception:
+            if not all(data.get(field) for field in required_fields):
                 bot.send_message(
                     chat_id,
-                    "ارسال ثبت‌نام با مشکل مواجه شد. لطفاً کمی بعد دوباره تلاش کن.",
+                    "اطلاعات ثبت‌نام کامل نیست. لطفاً ثبت‌نام را دوباره آغاز کنید.",
                     reply_markup=festival_detail_menu()
                 )
                 registration_states.pop(chat_id, None)
                 return
 
-            registration_states.pop(chat_id, None)
+            state["step"] = "retry"
 
-            bot.send_message(
+            send_registration_to_admin(
+                bot,
                 chat_id,
-                "✅ ثبت‌نامت با موفقیت انجام شد!\n"
-                "ممنون که در جشنواره رنگ و شور شرکت می‌کنی. 🎨",
-                reply_markup=festival_detail_menu()
+                state
             )
 
 
-def cancel_keyboard():
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.row(KeyboardButton("❌ لغو ثبت‌نام"))
-    return keyboard
+def send_registration_to_admin(bot, chat_id, state):
+    data = state["data"]
+    admin_chat_id = os.getenv("ADMIN_ID")
+
+    if not admin_chat_id:
+        logger.error("ADMIN_CHAT_ID is not configured.")
+
+        bot.send_message(
+            chat_id,
+            "ثبت‌نام شما هنوز نهایی نشده است؛ "
+            "تنظیمات مقصد دریافت ثبت‌نام نیاز به بررسی دارد.",
+            reply_markup=retry_keyboard()
+        )
+        return
+
+    try:
+        admin_chat_id = int(admin_chat_id)
+
+        admin_message = (
+            "رنگ و شور ✅\n\n"
+            f"👤 نام و نام خانوادگی: {data['full_name']}\n"
+            f"🆔 شماره دانشجویی: {data['student_id']}\n"
+            f"📞 شماره تماس: {data['phone']}\n"
+            f"🎓 مقطع تحصیلی: {data['degree']}\n"
+            f"📚 رشته تحصیلی: {data['major']}"
+        )
+
+        bot.send_message(
+            admin_chat_id,
+            admin_message
+        )
+
+    except Exception:
+        logger.exception(
+            "Failed to send festival registration to admin."
+        )
+
+        bot.send_message(
+            chat_id,
+            "ارسال اطلاعات ثبت‌نام با مشکل مواجه شد. "
+            "اطلاعات شما حفظ شده است؛ لطفاً دوباره تلاش کنید.",
+            reply_markup=retry_keyboard()
+        )
+        return
+
+    registration_states.pop(chat_id, None)
+
+    bot.send_message(
+        chat_id,
+        "✅ ثبت‌نام شما با موفقیت انجام شد!\n"
+        "از شرکت شما در جشنواره رنگ و شور سپاسگزاریم. 🎨",
+        reply_markup=festival_detail_menu()
+    )

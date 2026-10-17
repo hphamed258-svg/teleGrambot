@@ -1,3 +1,4 @@
+
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 
@@ -14,7 +15,7 @@ def main_menu():
 
     keyboard.row(workshops_button, courses_button)
     keyboard.row(competitions_button, sessions_button)
-    keyboard.row(feedback_button, cooperation_button)
-    keyboard.row(festivals_button)
+    keyboard.row(cooperation_button, festivals_button)
+    keyboard.row(feedback_button)
 
     return keyboard
