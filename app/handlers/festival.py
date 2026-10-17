@@ -341,7 +341,7 @@ def send_registration_to_admin(bot, chat_id, state):
 
         admin_message = (
             "رنگ و شور ✅\n\n"
-            f"\n👤 آیدی تلگرام: @{data['username']}"
+            f"👤 آیدی تلگرام: @{data['username']}\n"
             f"👤 نام و نام خانوادگی: {data['full_name']}\n"
             f"🆔 شماره دانشجویی: {data['student_id']}\n"
             f"📞 شماره تماس: {data['phone']}\n"
