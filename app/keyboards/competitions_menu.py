@@ -1,12 +1,16 @@
+
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
+
 COMPETITION_TITLE = "🎨 سی‌رنگ"
+MINI_ARC_TITLE = "🧠 مسابقه مقدماتی آرک (مینی آرک)"
+
 
 def competitions_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 
-
     keyboard.row(KeyboardButton(COMPETITION_TITLE))
+    keyboard.row(KeyboardButton(MINI_ARC_TITLE))
     keyboard.row(KeyboardButton("🔙 بازگشت به منوی اصلی"))
 
     return keyboard
@@ -15,9 +19,9 @@ def competitions_menu():
 def competition_details_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 
-
     keyboard.row(KeyboardButton("📝 ثبت‌نام در مسابقه"))
     keyboard.row(KeyboardButton("🔙 بازگشت به مسابقات"))
+    keyboard.row(KeyboardButton("🏠 منوی اصلی"))
 
     return keyboard
 
@@ -25,15 +29,15 @@ def competition_details_menu():
 def cancel_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 
-
     keyboard.row(KeyboardButton("❌ انصراف"))
+    keyboard.row(KeyboardButton("🔙 بازگشت به مسابقات"))
+    keyboard.row(KeyboardButton("🏠 منوی اصلی"))
 
     return keyboard
 
 
 def phone_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-
 
     keyboard.row(
         KeyboardButton(
@@ -42,27 +46,36 @@ def phone_menu():
         )
     )
     keyboard.row(KeyboardButton("❌ انصراف"))
+    keyboard.row(KeyboardButton("🔙 بازگشت به مسابقات"))
+    keyboard.row(KeyboardButton("🏠 منوی اصلی"))
 
     return keyboard
 
 
-def major_menu():
+def entry_year_menu():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
 
-
     keyboard.row(
-        KeyboardButton("مهندسی کامپیوتر"),
-        KeyboardButton("حسابداری")
+        KeyboardButton("ورودی 401"),
+        KeyboardButton("ورودی 402")
     )
     keyboard.row(
-        KeyboardButton("روانشناسی"),
-        KeyboardButton("حقوق")
-    )
-    keyboard.row(
-        KeyboardButton("مدیریت بازرگانی"),
-        KeyboardButton("ادبیات زبان انگلیسی")
+        KeyboardButton("ورودی 403"),
+        KeyboardButton("ورودی 404")
     )
     keyboard.row(KeyboardButton("❌ انصراف"))
+    keyboard.row(KeyboardButton("🔙 بازگشت به مسابقات"))
+    keyboard.row(KeyboardButton("🏠 منوی اصلی"))
 
     return keyboard
 
+
+def retry_menu():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    keyboard.row(KeyboardButton("🔄 تلاش مجدد برای ثبت‌نام"))
+    keyboard.row(KeyboardButton("❌ انصراف"))
+    keyboard.row(KeyboardButton("🔙 بازگشت به مسابقات"))
+    keyboard.row(KeyboardButton("🏠 منوی اصلی"))
+
+    return keyboard
