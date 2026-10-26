@@ -321,7 +321,6 @@
 # #             "فعلاً مسابقه ای در حال برگزاری نیست."
 # #         )
 
-
 from pathlib import Path
 import logging
 
@@ -349,8 +348,7 @@ logger = logging.getLogger(__name__)
 # ==========================================
 
 SIRANG_CLOSED_TEXT = (
-    "🎨 مسابقه سی‌رنگ\n\n"
-    "این مسابقه قبلاً برگزار شده است و مهلت ثبت‌نام آن "
+    "مسابقه سی‌رنگ قبلاً برگزار شده است و مهلت ثبت‌نام آن "
     "به پایان رسیده است.\n\n"
     "برای مشاهده مسابقات دیگر، به فهرست مسابقات برگردید."
 )
@@ -362,13 +360,10 @@ SIRANG_CLOSED_TEXT = (
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-# پوستر را در مسیر زیر قرار بده:
-# app/assets/mini_arc_poster.jpg
 MINI_ARC_POSTER_PATH = (
     PROJECT_ROOT / "assets" / "mini_arc_poster.jpg"
 )
 
-# کپشن را خودت در این قسمت جایگزین کن.
 MINI_ARC_TEXT = """
 🏁 مینی آرک | MINI ARC
 💻 مسابقه برنامه‌نویسی الگوریتمی
@@ -398,7 +393,6 @@ ENTRY_YEARS = {
     "ورودی 404",
 }
 
-
 # اطلاعات موقت ثبت‌نام هر کاربر
 registration_data = {}
 
@@ -421,12 +415,12 @@ def register_competitions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "🏆 لطفاً مسابقه موردنظر خود را انتخاب کنید:",
+            "لطفاً مسابقه موردنظر خود را انتخاب کنید:",
             reply_markup=competitions_menu()
         )
 
     # --------------------------------------
-    # نمایش سی‌رنگ؛ ثبت‌نام بسته است
+    # سی‌رنگ: ثبت‌نام بسته
     # --------------------------------------
 
     @bot.message_handler(
@@ -442,7 +436,7 @@ def register_competitions_handler(bot: TeleBot):
         )
 
     # --------------------------------------
-    # نمایش جزئیات مینی آرک
+    # نمایش مینی آرک
     # --------------------------------------
 
     @bot.message_handler(
@@ -462,7 +456,7 @@ def register_competitions_handler(bot: TeleBot):
         else:
             bot.send_message(
                 message.chat.id,
-                "⚠️ پوستر مینی آرک پیدا نشد.\n\n" + MINI_ARC_TEXT,
+                "پوستر مینی آرک پیدا نشد.\n\n" + MINI_ARC_TEXT,
                 reply_markup=competition_details_menu()
             )
 
@@ -478,7 +472,7 @@ def register_competitions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "🏆 لطفاً مسابقه موردنظر خود را انتخاب کنید:",
+            "لطفاً مسابقه موردنظر خود را انتخاب کنید:",
             reply_markup=competitions_menu()
         )
 
@@ -502,7 +496,7 @@ def register_competitions_handler(bot: TeleBot):
         )
 
     # --------------------------------------
-    # شروع ثبت‌نام مینی آرک
+    # شروع ثبت‌نام
     # --------------------------------------
 
     @bot.message_handler(
@@ -518,31 +512,24 @@ def register_competitions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "🧠 ثبت‌نام مسابقه مینی آرک\n\n"
-            "👤 لطفاً نام و نام خانوادگی خود را وارد کنید:",
+            "ثبت‌نام مسابقه مینی آرک\n\n"
+            "لطفاً نام و نام خانوادگی خود را وارد کنید:",
             reply_markup=cancel_menu()
         )
 
         bot.register_next_step_handler(message, get_name)
 
     # ======================================
-    # ابزار مدیریت انصراف و بازگشت
+    # مدیریت انصراف و بازگشت
     # ======================================
 
     def handle_navigation(message):
-        """
-        در صورت انتخاب انصراف یا بازگشت،
-        ثبت‌نام جاری را متوقف می‌کند.
-        """
-
         text = message.text
         user_id = message.from_user.id
 
         navigation_options = {
             "❌ انصراف",
             "🔙 بازگشت به مسابقات",
-            "🔙 بازگشت به منوی اصلی",
-            "🏠 منوی اصلی",
             "🏆 مسابقات",
         }
 
@@ -554,22 +541,14 @@ def register_competitions_handler(bot: TeleBot):
         if text == "❌ انصراف":
             bot.send_message(
                 message.chat.id,
-                "❌ ثبت‌نام شما لغو شد.",
+                "ثبت‌نام شما لغو شد.",
                 reply_markup=competitions_menu()
             )
-
-        elif text == "🔙 بازگشت به مسابقات" or text == "🏆 مسابقات":
-            bot.send_message(
-                message.chat.id,
-                "🏆 لطفاً مسابقه موردنظر خود را انتخاب کنید:",
-                reply_markup=competitions_menu()
-            )
-
         else:
             bot.send_message(
                 message.chat.id,
-                "به منوی اصلی برگشتید.",
-                reply_markup=main_menu()
+                "لطفاً مسابقه موردنظر خود را انتخاب کنید:",
+                reply_markup=competitions_menu()
             )
 
         return True
@@ -588,10 +567,13 @@ def register_competitions_handler(bot: TeleBot):
         if not state:
             return
 
-        if message.content_type != "text" or not message.text.strip():
+        if (
+            message.content_type != "text"
+            or not message.text.strip()
+        ):
             bot.send_message(
                 message.chat.id,
-                "لطفاً نام و نام خانوادگی را به‌صورت متنی وارد کنید.",
+                "لطفاً نام و نام خانوادگی خود را به‌صورت متنی وارد کنید.",
                 reply_markup=cancel_menu()
             )
             bot.register_next_step_handler(message, get_name)
@@ -601,14 +583,50 @@ def register_competitions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "🆔 لطفاً شماره دانشجویی خود را وارد کنید:",
+            "لطفاً نام تیم خود را وارد کنید:",
+            reply_markup=cancel_menu()
+        )
+
+        bot.register_next_step_handler(message, get_team_name)
+
+    # ======================================
+    # مرحله دوم: نام تیم
+    # ======================================
+
+    def get_team_name(message):
+        if handle_navigation(message):
+            return
+
+        user_id = message.from_user.id
+        state = registration_data.get(user_id)
+
+        if not state:
+            return
+
+        if (
+            message.content_type != "text"
+            or not message.text.strip()
+        ):
+            bot.send_message(
+                message.chat.id,
+                "لطفاً نام تیم را به‌صورت متنی وارد کنید.",
+                reply_markup=cancel_menu()
+            )
+            bot.register_next_step_handler(message, get_team_name)
+            return
+
+        state["data"]["team_name"] = message.text.strip()
+
+        bot.send_message(
+            message.chat.id,
+            "لطفاً شماره دانشجویی خود را وارد کنید:",
             reply_markup=cancel_menu()
         )
 
         bot.register_next_step_handler(message, get_student_id)
 
     # ======================================
-    # مرحله دوم: شماره دانشجویی
+    # مرحله سوم: شماره دانشجویی
     # ======================================
 
     def get_student_id(message):
@@ -621,7 +639,10 @@ def register_competitions_handler(bot: TeleBot):
         if not state:
             return
 
-        if message.content_type != "text" or not message.text.strip():
+        if (
+            message.content_type != "text"
+            or not message.text.strip()
+        ):
             bot.send_message(
                 message.chat.id,
                 "لطفاً شماره دانشجویی خود را به‌صورت متنی وارد کنید.",
@@ -634,15 +655,14 @@ def register_competitions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "📱 لطفاً شماره تماس خود را با دکمه زیر ارسال کنید.\n"
-            "می‌توانید شماره را به‌صورت دستی نیز وارد کنید.",
+            "لطفاً شماره تماس خود را ارسال کنید. می‌توانید از دکمه زیر استفاده کنید یا شماره را دستی وارد کنید.",
             reply_markup=phone_menu()
         )
 
         bot.register_next_step_handler(message, get_phone)
 
     # ======================================
-    # مرحله سوم: شماره تماس
+    # مرحله چهارم: شماره تماس
     # ======================================
 
     def get_phone(message):
@@ -705,14 +725,14 @@ def register_competitions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "🎓 لطفاً سال ورودی خود را انتخاب کنید:",
+            "لطفاً سال ورودی خود را انتخاب کنید:",
             reply_markup=entry_year_menu()
         )
 
         bot.register_next_step_handler(message, get_entry_year)
 
     # ======================================
-    # مرحله چهارم: سال ورودی
+    # مرحله پنجم: سال ورودی
     # ======================================
 
     def get_entry_year(message):
@@ -725,7 +745,10 @@ def register_competitions_handler(bot: TeleBot):
         if not state:
             return
 
-        if message.content_type != "text" or message.text not in ENTRY_YEARS:
+        if (
+            message.content_type != "text"
+            or message.text not in ENTRY_YEARS
+        ):
             bot.send_message(
                 message.chat.id,
                 "لطفاً سال ورودی خود را از بین گزینه‌های زیر انتخاب کنید:",
@@ -745,7 +768,6 @@ def register_competitions_handler(bot: TeleBot):
     def send_registration_to_admin(message):
         user_id = message.from_user.id
         user = message.from_user
-
         state = registration_data.get(user_id)
 
         if not state:
@@ -760,13 +782,14 @@ def register_competitions_handler(bot: TeleBot):
         )
 
         admin_message = (
-            "🧠 ثبت‌نام جدید مسابقه مینی آرک\n\n"
-            f"👤 نام و نام خانوادگی: {data['name']}\n"
-            f"🆔 شماره دانشجویی: {data['student_id']}\n"
-            f"📱 شماره تماس: {data['phone']}\n"
-            f"🎓 سال ورودی: {data['entry_year']}\n"
-            f"🔗 نام کاربری تلگرام: {username}\n"
-            f"🆔 شناسه تلگرام: {user.id}"
+            "ثبت‌نام جدید مسابقه مینی آرک\n\n"
+            f"نام و نام خانوادگی: {data['name']}\n"
+            f"نام تیم: {data['team_name']}\n"
+            f"شماره دانشجویی: {data['student_id']}\n"
+            f"شماره تماس: {data['phone']}\n"
+            f"سال ورودی: {data['entry_year']}\n"
+            f"نام کاربری تلگرام: {username}\n"
+            f"شناسه تلگرام: {user.id}"
         )
 
         try:
@@ -779,9 +802,7 @@ def register_competitions_handler(bot: TeleBot):
 
             bot.send_message(
                 message.chat.id,
-                "⚠️ ارسال اطلاعات با مشکل مواجه شد.\n"
-                "اطلاعات شما حفظ شده است؛ برای تلاش دوباره "
-                "از دکمه زیر استفاده کنید.",
+                "ارسال اطلاعات با مشکل مواجه شد. اطلاعات شما حفظ شده است؛ لطفاً دوباره تلاش کنید.",
                 reply_markup=retry_menu()
             )
 
@@ -795,13 +816,13 @@ def register_competitions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "✅ ثبت‌نام شما در مسابقه مینی آرک با موفقیت انجام شد!\n\n"
-            "از ثبت‌نام شما سپاسگزاریم. 🧠",
-            reply_markup=competitions_menu()
+            "ثبت‌نام شما در مسابقه مینی آرک با موفقیت انجام شد.\n\n"
+            "از ثبت‌نام شما سپاسگزاریم.",
+            reply_markup=main_menu()
         )
 
     # ======================================
-    # تلاش مجدد پس از خطای ارسال
+    # تلاش مجدد برای ارسال
     # ======================================
 
     def retry_registration(message):
@@ -820,9 +841,11 @@ def register_competitions_handler(bot: TeleBot):
 
         bot.send_message(
             message.chat.id,
-            "لطفاً برای ارسال اطلاعات، دکمه تلاش مجدد را انتخاب کنید "
-            "یا ثبت‌نام را لغو کنید.",
+            "لطفاً تلاش مجدد را انتخاب کنید یا ثبت‌نام را لغو کنید.",
             reply_markup=retry_menu()
         )
 
-        bot.register_next_step_handler(message, retry_registration)
+        bot.register_next_step_handler(
+            message,
+            retry_registration
+        )
