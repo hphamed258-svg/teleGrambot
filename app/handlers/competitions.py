@@ -634,31 +634,48 @@ def register_competitions_handler(bot: TeleBot):
             return
 
         user_id = message.from_user.id
-        state = registration_data.get(user_id)
 
-        if not state:
+        if user_id not in registration_data:
             return
 
-        if (
-            message.content_type != "text"
-            or not message.text.strip()
-        ):
+        student_id = message.text.strip() if message.text else ""
+
+        # تبدیل ارقام فارسی و عربی به انگلیسی
+        digit_map = str.maketrans(
+            "۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩",
+            "01234567890123456789"
+        )
+        student_id = student_id.translate(digit_map)
+
+        # بررسی تعداد رقم‌ها و عدد بودن
+        if not student_id.isdigit() or len(student_id) != 8:
             bot.send_message(
                 message.chat.id,
-                "لطفاً شماره دانشجویی خود را به‌صورت متنی وارد کنید.",
+                "شماره دانشجویی باید دقیقاً ۸ رقم باشد.\nلطفاً دوباره وارد کنید:",
                 reply_markup=cancel_menu()
             )
             bot.register_next_step_handler(message, get_student_id)
             return
 
-        state["data"]["student_id"] = message.text.strip()
+        # جلوگیری از شماره‌هایی مثل 00000000 یا 11111111
+        if len(set(student_id)) == 1:
+            bot.send_message(
+                message.chat.id,
+                "این شماره دانشجویی معتبر نیست؛ تمام رقم‌ها نمی‌توانند یکسان باشند.\nلطفاً شماره صحیح را وارد کنید:",
+                reply_markup=cancel_menu()
+            )
+            bot.register_next_step_handler(message, get_student_id)
+            return
+
+        registration_data[user_id]["data"]["student_id"] = student_id
+
+        registration_data[user_id]["step"] = "phone"
 
         bot.send_message(
             message.chat.id,
             "لطفاً شماره تماس خود را ارسال کنید. می‌توانید از دکمه زیر استفاده کنید یا شماره را دستی وارد کنید.",
             reply_markup=phone_menu()
         )
-
         bot.register_next_step_handler(message, get_phone)
 
     # ======================================
